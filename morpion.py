@@ -34,8 +34,14 @@ def enableAllPossibleButton():
     for i in range(0, 5):
         for j in range(0, 5):
             if (i == 0 or i == 4 or j == 0 or j == 4):
-                if (matrixOfButton[i][j]["text"] != 'O' and matrixOfButton[i][j]["text"] != 'X'):
-                    matrixOfButton[i][j].configure(state='normal', bg='grey')
+                if (writeText() == 'X'):
+                    if (matrixOfButton[i][j]["text"] != 'O'):
+                        matrixOfButton[i][j].configure(
+                            state='normal', bg='grey')
+                elif (writeText() == 'O'):
+                    if (matrixOfButton[i][j]["text"] != 'X'):
+                        matrixOfButton[i][j].configure(
+                            state='normal', bg='grey')
 
 
 def disableButton(button):
@@ -48,7 +54,8 @@ def disableAllButton():
             disableButton(matrixOfButton[i][j])
 
 
-def writeText(turnOfPlayerO):
+def writeText():
+    global turnOfPlayerO
     if (turnOfPlayerO == True):
         return 'O'
     elif (turnOfPlayerO == False):
@@ -66,7 +73,7 @@ def endGame(player):
 def insertAtRow(i, start, end, increment):
     temp = matrixOfButton[i][start]["text"]
     temp2 = None
-    matrixOfButton[i][start]["text"] = writeText(turnOfPlayerO)
+    matrixOfButton[i][start]["text"] = writeText()
     for iterator in range(start+increment, end+increment, increment):
         temp2 = matrixOfButton[i][iterator]["text"]
         matrixOfButton[i][iterator]["text"] = temp
@@ -76,7 +83,7 @@ def insertAtRow(i, start, end, increment):
 def insertAtColumn(j, start, end, increment):
     temp = matrixOfButton[start][j]["text"]
     temp2 = None
-    matrixOfButton[start][j]["text"] = writeText(turnOfPlayerO)
+    matrixOfButton[start][j]["text"] = writeText()
     for iterator in range(start+increment, end+increment, increment):
         temp2 = matrixOfButton[iterator][j]["text"]
         matrixOfButton[iterator][j]["text"] = temp
@@ -109,6 +116,7 @@ def btnClick(button, i, j):
             selectingPosition = True
 
     elif (selectingPosition == True and selectingDirection == False):
+
         if (i == tempBtnClickedInfo[1] and j == tempBtnClickedInfo[2]):
             if (j == 0):
                 if (i == 0):
@@ -146,17 +154,33 @@ def btnClick(button, i, j):
                     selectingPosition = False
                     selectingDirection = True
                     return
-                if (i == 1 or i == 2 or i == 3):
+                elif (i == 1 or i == 2 or i == 3):
                     insertAtRow(i, 4, 0, -1)
                     endOfSelection()
                     return
-                if (i == 4):
+                elif (i == 4):
                     disableAllButton()
                     enableButton(matrixOfButton[i-1][j])
                     enableButton(matrixOfButton[i][j-1])
                     selectingPosition = False
                     selectingDirection = True
                     return
+
+        elif (i == tempBtnClickedInfo[1] and j != tempBtnClickedInfo[2]):
+            if (j == 0):
+                insertAtRow(i, 0, 4, 1)
+                endOfSelection()
+            elif (j == 4):
+                insertAtRow(i, 4, 0, -1)
+                endOfSelection()
+
+        elif (i != tempBtnClickedInfo[1] and j == tempBtnClickedInfo[2]):
+            if (i == 0):
+                insertAtColumn(j, 0, 4, 1)
+                endOfSelection()
+            elif (i == 4):
+                insertAtColumn(j, 4, 0, -1)
+                endOfSelection()
 
     elif (selectingPosition == False and selectingDirection == True):
         # When choosing top right
