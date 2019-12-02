@@ -70,21 +70,29 @@ def endGame(player):
     raise SystemExit
 
 
-def insertAtRow(i, start, end, increment):
+def insertAtRow(i, start, end, increment, tempBtnClickedInfo):
+    matrixOfButton[tempBtnClickedInfo[1]
+                   ][tempBtnClickedInfo[2]]["text"] = 'VOID'
     temp = matrixOfButton[i][start]["text"]
     temp2 = None
     matrixOfButton[i][start]["text"] = writeText()
     for iterator in range(start+increment, end+increment, increment):
+        if (temp == 'VOID'):
+            break
         temp2 = matrixOfButton[i][iterator]["text"]
         matrixOfButton[i][iterator]["text"] = temp
         temp = temp2
 
 
-def insertAtColumn(j, start, end, increment):
+def insertAtColumn(j, start, end, increment, tempBtnClickedInfo):
+    matrixOfButton[tempBtnClickedInfo[1]
+                   ][tempBtnClickedInfo[2]]["text"] = 'VOID'
     temp = matrixOfButton[start][j]["text"]
     temp2 = None
     matrixOfButton[start][j]["text"] = writeText()
     for iterator in range(start+increment, end+increment, increment):
+        if (temp == 'VOID'):
+            break
         temp2 = matrixOfButton[iterator][j]["text"]
         matrixOfButton[iterator][j]["text"] = temp
         temp = temp2
@@ -104,14 +112,36 @@ def btnClick(button, i, j):
 
     if (selectingPosition == False and selectingDirection == False):
         disableAllButton()
-        if (i == 0 or i == 4):
-            enableButton(matrixOfButton[0][j])
+        if (i == 0):
             enableButton(matrixOfButton[4][j])
+            if (j != 0):
+                enableButton(matrixOfButton[i][0])
+            if (j != 4):
+                enableButton(matrixOfButton[i][4])
             tempBtnClickedInfo = [button, i, j]
             selectingPosition = True
-        if (j == 0 or j == 4):
-            enableButton(matrixOfButton[i][0])
+        if (i == 4):
+            enableButton(matrixOfButton[0][j])
+            if (j != 0):
+                enableButton(matrixOfButton[i][0])
+            if (j != 4):
+                enableButton(matrixOfButton[i][4])
+            tempBtnClickedInfo = [button, i, j]
+            selectingPosition = True
+        if (j == 0):
             enableButton(matrixOfButton[i][4])
+            if (i != 0):
+                enableButton(matrixOfButton[0][j])
+            if (i != 4):
+                enableButton(matrixOfButton[4][j])
+            tempBtnClickedInfo = [button, i, j]
+            selectingPosition = True
+        if (j == 4):
+            enableButton(matrixOfButton[i][0])
+            if (i != 0):
+                enableButton(matrixOfButton[0][j])
+            if (i != 4):
+                enableButton(matrixOfButton[4][j])
             tempBtnClickedInfo = [button, i, j]
             selectingPosition = True
 
@@ -127,7 +157,7 @@ def btnClick(button, i, j):
                     selectingDirection = True
                     return
                 if (i == 1 or i == 2 or i == 3):
-                    insertAtRow(i, 0, 4, 1)
+                    insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
                     endOfSelection()
                     return
                 if (i == 4):
@@ -140,10 +170,10 @@ def btnClick(button, i, j):
 
             elif (j == 1 or j == 2 or j == 3):
                 if (i == 0):
-                    insertAtColumn(j, 0, 4, 1)
+                    insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
                     endOfSelection()
                 elif (i == 4):
-                    insertAtColumn(j, 4, 0, -1)
+                    insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
                     endOfSelection()
 
             if (j == 4):
@@ -155,7 +185,7 @@ def btnClick(button, i, j):
                     selectingDirection = True
                     return
                 elif (i == 1 or i == 2 or i == 3):
-                    insertAtRow(i, 4, 0, -1)
+                    insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
                     endOfSelection()
                     return
                 elif (i == 4):
@@ -168,59 +198,59 @@ def btnClick(button, i, j):
 
         elif (i == tempBtnClickedInfo[1] and j != tempBtnClickedInfo[2]):
             if (j == 0):
-                insertAtRow(i, 0, 4, 1)
+                insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
                 endOfSelection()
             elif (j == 4):
-                insertAtRow(i, 4, 0, -1)
+                insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
                 endOfSelection()
 
         elif (i != tempBtnClickedInfo[1] and j == tempBtnClickedInfo[2]):
             if (i == 0):
-                insertAtColumn(j, 0, 4, 1)
+                insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
                 endOfSelection()
             elif (i == 4):
-                insertAtColumn(j, 4, 0, -1)
+                insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
                 endOfSelection()
 
     elif (selectingPosition == False and selectingDirection == True):
         # When choosing top right
         if (i == 0 and j == 1):
-            insertAtRow(i, 0, 4, 1)
+            insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
             endOfSelection()
             return
 
         elif (i == 1 and j == 0):
-            insertAtColumn(j, 0, 4, 1)
+            insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
             endOfSelection()
             return
 
         # When choosing top left
         elif (i == 0 and j == 3):
-            insertAtRow(i, 4, 0, -1)
+            insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
             endOfSelection()
             return
         elif (i == 1 and j == 4):
-            insertAtColumn(j, 0, 4, 1)
+            insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
             endOfSelection()
             return
 
         # When choosing bottom right
         elif (i == 4 and j == 1):
-            insertAtRow(i, 0, 4, 1)
+            insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
             endOfSelection()
             return
         elif (i == 3 and j == 0):
-            insertAtColumn(j, 4, 0, -1)
+            insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
             endOfSelection()
             return
 
         # When choosing bottom left
         elif (i == 4 and j == 3):
-            insertAtRow(i, 4, 0, -1)
+            insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
             endOfSelection()
             return
         elif (i == 3 and j == 4):
-            insertAtColumn(j, 4, 0, -1)
+            insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
             endOfSelection()
             return
 
