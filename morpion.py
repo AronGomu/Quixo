@@ -1,20 +1,17 @@
 import Tkinter
 import tkMessageBox
-root = Tkinter.Tk()
-root.title("Quixo")
+import player
 
 
-turnOfPlayerO = True
+root = None
+
+playerX = player.Player('X', False)
+playerO = player.Player('O', False)
+playerX.next = playerO
+playerO.next = playerX
 
 
-def changePlayer():
-    global turnOfPlayerO
-    if turnOfPlayerO == True:
-        turnOfPlayerO = False
-    else:
-        turnOfPlayerO = True
-
-
+activePlayer = playerX
 selectingPosition = False
 selectingDirection = False
 tempBtnClickedInfo = None
@@ -22,7 +19,13 @@ tempBtnClickedInfo = None
 matrixOfButton = []
 
 
+def changePlayer():
+    global activePlayer
+    activePlayer = activePlayer.getNext()
+
+
 def createButton(i, j):
+    global root
     return Tkinter.Button(root, text=' ', font='Times 20 bold', bg='gray', fg='white', height=4, width=8, command=lambda: btnClick(matrixOfButton[i][j], i, j))
 
 
@@ -55,14 +58,7 @@ def disableAllButton():
 
 
 def writeText():
-    global turnOfPlayerO
-    if (turnOfPlayerO == True):
-        return 'O'
-    elif (turnOfPlayerO == False):
-        return 'X'
-    else:
-        print ("ERROR in writeText. turnOfPlayer is :", turnOfPlayer)
-        return None
+    return activePlayer.symbol
 
 
 def endGame(player):
@@ -99,16 +95,19 @@ def insertAtColumn(j, start, end, increment, tempBtnClickedInfo):
 
 
 def endOfSelection():
-    global selectingPosition, selectingDirection
+    global activePlayer, selectingPosition, selectingDirection
     selectingPosition = False
     selectingDirection = False
     changePlayer()
     disableAllButton()
-    enableAllPossibleButton()
+    if (activePlayer.is_ai == True):
+        print('insert code')
+    else:
+        enableAllPossibleButton()
 
 
 def btnClick(button, i, j):
-    global turnOfPlayerO, selectingPosition, selectingDirection, tempBtnClickedInfo
+    global selectingPosition, selectingDirection, tempBtnClickedInfo
 
     if (selectingPosition == False and selectingDirection == False):
         disableAllButton()
@@ -278,17 +277,34 @@ def checkForWin():
                         endGame(matrixOfButton[i][j]['text'])
 
 
-for i in range(0, 5):
-    matrixOfButton.append(range(0, 5))
-print(matrixOfButton[0][0])
+def launchApp(playerX_is_ai, playerO_is_ai):
+    global root, playerX, playerO
 
+    if (playerX_is_ai == 'ai'):
+        playerX.is_ai = True
+    else:
+        playerX_is_ai = False
 
-for i in range(0, 5):
-    for j in range(0, 5):
-        matrixOfButton[i][j] = createButton(i, j)
-        if(i != 0 and i != 4 and j != 0 and j != 4):
-            disableButton(matrixOfButton[i][j])
-        matrixOfButton[i][j].grid(row=i, column=j)
+    if (playerO_is_ai == 'ai'):
+        playerO.is_ai = True
+    else:
+        playerO_is_ai = False
 
+    print("playerX.is_ai :", playerX.is_ai)
+    print("playerO.is_ai :", playerO.is_ai)
 
-root.mainloop()
+    root = Tkinter.Tk()
+    root.title("Quixo")
+
+    for i in range(0, 5):
+        matrixOfButton.append(range(0, 5))
+    print(matrixOfButton[0][0])
+
+    for i in range(0, 5):
+        for j in range(0, 5):
+            matrixOfButton[i][j] = createButton(i, j)
+            if(i != 0 and i != 4 and j != 0 and j != 4):
+                disableButton(matrixOfButton[i][j])
+            matrixOfButton[i][j].grid(row=i, column=j)
+
+    root.mainloop()
