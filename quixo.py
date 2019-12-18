@@ -1,6 +1,7 @@
 import Tkinter
 import tkMessageBox
 import player
+import ai
 
 
 root = None
@@ -19,7 +20,7 @@ tempBtnClickedInfo = None
 matrixOfButton = []
 
 
-def changePlayer():
+def swapPlayer():
     global activePlayer
     activePlayer = activePlayer.getNext()
 
@@ -98,15 +99,16 @@ def endOfSelection():
     global activePlayer, selectingPosition, selectingDirection
     selectingPosition = False
     selectingDirection = False
-    changePlayer()
+    swapPlayer()
     disableAllButton()
+    checkForWin()
     if (activePlayer.is_ai == True):
-        print('insert code')
-    else:
-        enableAllPossibleButton()
+        aiPlay()
+    enableAllPossibleButton()
 
 
 def btnClick(button, i, j):
+
     global selectingPosition, selectingDirection, tempBtnClickedInfo
 
     if (selectingPosition == False and selectingDirection == False):
@@ -146,56 +148,7 @@ def btnClick(button, i, j):
 
     elif (selectingPosition == True and selectingDirection == False):
 
-        if (i == tempBtnClickedInfo[1] and j == tempBtnClickedInfo[2]):
-            if (j == 0):
-                if (i == 0):
-                    disableAllButton()
-                    enableButton(matrixOfButton[i+1][j])
-                    enableButton(matrixOfButton[i][j+1])
-                    selectingPosition = False
-                    selectingDirection = True
-                    return
-                if (i == 1 or i == 2 or i == 3):
-                    insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
-                    endOfSelection()
-                    return
-                if (i == 4):
-                    disableAllButton()
-                    enableButton(matrixOfButton[i-1][j])
-                    enableButton(matrixOfButton[i][j+1])
-                    selectingPosition = False
-                    selectingDirection = True
-                    return
-
-            elif (j == 1 or j == 2 or j == 3):
-                if (i == 0):
-                    insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
-                    endOfSelection()
-                elif (i == 4):
-                    insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
-                    endOfSelection()
-
-            if (j == 4):
-                if (i == 0):
-                    disableAllButton()
-                    enableButton(matrixOfButton[i+1][j])
-                    enableButton(matrixOfButton[i][j-1])
-                    selectingPosition = False
-                    selectingDirection = True
-                    return
-                elif (i == 1 or i == 2 or i == 3):
-                    insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
-                    endOfSelection()
-                    return
-                elif (i == 4):
-                    disableAllButton()
-                    enableButton(matrixOfButton[i-1][j])
-                    enableButton(matrixOfButton[i][j-1])
-                    selectingPosition = False
-                    selectingDirection = True
-                    return
-
-        elif (i == tempBtnClickedInfo[1] and j != tempBtnClickedInfo[2]):
+        if (i == tempBtnClickedInfo[1] and j != tempBtnClickedInfo[2]):
             if (j == 0):
                 insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
                 endOfSelection()
@@ -211,70 +164,52 @@ def btnClick(button, i, j):
                 insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
                 endOfSelection()
 
-    elif (selectingPosition == False and selectingDirection == True):
-        # When choosing top right
-        if (i == 0 and j == 1):
-            insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-
-        elif (i == 1 and j == 0):
-            insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-
-        # When choosing top left
-        elif (i == 0 and j == 3):
-            insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-        elif (i == 1 and j == 4):
-            insertAtColumn(j, 0, 4, 1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-
-        # When choosing bottom right
-        elif (i == 4 and j == 1):
-            insertAtRow(i, 0, 4, 1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-        elif (i == 3 and j == 0):
-            insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-
-        # When choosing bottom left
-        elif (i == 4 and j == 3):
-            insertAtRow(i, 4, 0, -1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-        elif (i == 3 and j == 4):
-            insertAtColumn(j, 4, 0, -1, tempBtnClickedInfo)
-            endOfSelection()
-            return
-
-        else:
-            print("ERROR : Wrong case selected")
-            return
-
 
 def checkForWin():
+    for i in range(0, 5, 1):
+        if (matrixOfButton[i][0]['text'] != " "):
+            if (matrixOfButton[i][0]["text"] == matrixOfButton[i][1]["text"] == matrixOfButton[i][2]["text"] == matrixOfButton[i][3]["text"] == matrixOfButton[i][4]["text"]):
+                endGame(matrixOfButton[i][0]["text"])
+    for j in range(0, 5, 1):
+        if (matrixOfButton[0][j]['text'] != " "):
+            if (matrixOfButton[0][j]["text"] == matrixOfButton[1][j]["text"] == matrixOfButton[2][j]["text"] == matrixOfButton[3][j]["text"] == matrixOfButton[4][j]["text"]):
+                endGame(matrixOfButton[0][j]["text"])
+    if (matrixOfButton[0][0]['text'] != " "):
+        if (matrixOfButton[0][0]["text"] == matrixOfButton[1][1]["text"] == matrixOfButton[2][2]["text"] == matrixOfButton[3][3]["text"] == matrixOfButton[4][4]["text"]):
+            endGame(matrixOfButton[0][0]["text"])
+    if (matrixOfButton[0][4]['text'] != " "):
+        if (matrixOfButton[0][4]["text"] == matrixOfButton[1][3]["text"] == matrixOfButton[2][2]["text"] == matrixOfButton[3][1]["text"] == matrixOfButton[4][0]["text"]):
+            endGame(matrixOfButton[0][0]["text"])
+
+
+def aiPlay():
+    setBoardFromSimplified(ai.findBestPlay(getSimplifiedBoard(), activePlayer))
+    checkForWin()
+    swapPlayer()
+    if (activePlayer.is_ai == True):
+        aiPlay()
+    else:
+        return
+
+
+def getSimplifiedBoard():
+    global matrixOfButton
+    boardSimplified = []
+    for i in range(0, 5):
+        boardSimplified.append(range(0, 5))
     for i in range(0, 5):
         for j in range(0, 5):
-            if (i != 0 and i != 4):
-                if (matrixOfButton[i][j]['text'] != " "):
-                    if (matrixOfButton[i][j]['text'] == matrixOfButton[i+1][j]['text'] and matrixOfButton[i][j]['text'] == matrixOfButton[i-1][j]['text']):
-                        endGame(matrixOfButton[i][j]['text'])
-            if (j != 0 and j != 4):
-                if (matrixOfButton[i][j]['text'] != " "):
-                    if (matrixOfButton[i][j]['text'] == matrixOfButton[i][j+1]['text'] and matrixOfButton[i][j]['text'] == matrixOfButton[i][j-1]['text']):
-                        endGame(matrixOfButton[i][j]['text'])
-            if (i != 0 and i != 4 and j != 0 and j != 4):
-                if (matrixOfButton[i][j]['text'] != " "):
-                    if (matrixOfButton[i][j]['text'] == matrixOfButton[i+1][j+1]['text'] and matrixOfButton[i][j]['text'] == matrixOfButton[i-1][j-1]['text']):
-                        endGame(matrixOfButton[i][j]['text'])
-                    if (matrixOfButton[i][j]['text'] == matrixOfButton[i+1][j-1]['text'] and matrixOfButton[i][j]['text'] == matrixOfButton[i-1][j+1]['text']):
-                        endGame(matrixOfButton[i][j]['text'])
+            boardSimplified[i][j] = matrixOfButton[i][j]["text"]
+    return boardSimplified
+
+
+def setBoardFromSimplified(boardSimplified):
+    global matrixOfButton
+    for i in range(0, 5):
+        boardSimplified.append(range(0, 5))
+    for i in range(0, 5):
+        for j in range(0, 5):
+            matrixOfButton[i][j]["text"] = boardSimplified[i][j]
 
 
 def launchApp(playerX_is_ai, playerO_is_ai):
@@ -298,7 +233,6 @@ def launchApp(playerX_is_ai, playerO_is_ai):
 
     for i in range(0, 5):
         matrixOfButton.append(range(0, 5))
-    print(matrixOfButton[0][0])
 
     for i in range(0, 5):
         for j in range(0, 5):
@@ -306,5 +240,8 @@ def launchApp(playerX_is_ai, playerO_is_ai):
             if(i != 0 and i != 4 and j != 0 and j != 4):
                 disableButton(matrixOfButton[i][j])
             matrixOfButton[i][j].grid(row=i, column=j)
+
+    if (activePlayer.is_ai == True):
+        aiPlay()
 
     root.mainloop()
