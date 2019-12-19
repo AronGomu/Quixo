@@ -24,7 +24,6 @@ class Model:
         # create the board
         self.board = []
         for i in range(0, 5):
-            print "heya"
             self.board.append(range(0, 5))
 
         for i in range(0, 5):
@@ -80,20 +79,23 @@ class Model:
                 return self.board[0][4]
         return None
 
+    def endOfTurn(self):
+        winner = self.checkForWin()
+        if (self.checkForWin() is not None):
+            return winner
+        self.swapPlayer()
+        if (self.activePlayer.is_ai == True):
+            self.aiPlay()
+
     def aiPlay(self):
+        print "aiPlay"
+        print self.board
         self.board = self.ai.findBestPlay(self.board, self.activePlayer)
+        print "aiPlay2"
+        print self.board
         self.checkForWin()
         self.swapPlayer()
         if (self.activePlayer.is_ai == True):
             self.aiPlay()
         else:
             return
-
-    def endOfTurn(self):
-        winner = self.checkForWin()
-        print winner
-        if (self.checkForWin() is not None):
-            return winner
-        self.swapPlayer()
-        if (self.activePlayer.is_ai == True):
-            self.aiPlay()

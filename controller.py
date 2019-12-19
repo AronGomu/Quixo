@@ -19,9 +19,6 @@ class Controller:
         else:
             playerO_is_ai = False
 
-        print("playerX.is_ai :", self.model.playerX.is_ai)
-        print("playerO.is_ai :", self.model.playerO.is_ai)
-
         for i in range(0, 5):
             for j in range(0, 5):
                 self.view.matrixOfButton[i][j] = self.createButton(i, j)
@@ -99,6 +96,8 @@ class Controller:
                     self.endOfSelection()
 
     def endOfSelection(self):
+        print "ennd"
+        print self.model.board
         self.setBoardFromSimplified(self.model.board)
         self.view.selectingPosition = False
         self.view.selectingDirection = False
@@ -106,6 +105,7 @@ class Controller:
         winner = self.model.endOfTurn()
         if (winner is not None):
             view.endGame(winner)
+        self.setBoardFromSimplified(self.model.board)
         self.view.enableAllPossibleButton(self.model.getPlayerSymbol())
 
     def getSimplifiedBoard(self):
