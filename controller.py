@@ -5,32 +5,45 @@ import model
 
 class Controller:
 
+    __instance = None
+
+    @classmethod
+    def getInstance(cls):
+        if cls.__instance is None:
+            cls.__instance = Singleton()
+            return cls.__instance
+
+
     def __init__(self, playerX_is_ai, playerO_is_ai):
-        self.model = model.Model()
-        self.view = view.View("Quixo")
+        if not Controller.__instance:
+            self.model = model.Model()
+            self.view = view.View("Quixo")
 
-        if (playerX_is_ai == 'ai'):
-            self.model.playerX.is_ai = True
+            if (playerX_is_ai == 'ai'):
+                self.model.playerX.is_ai = True
+            else:
+                playerX_is_ai = False
+
+            if (playerO_is_ai == 'ai'):
+                self.model.playerO.is_ai = True
+            else:
+                playerO_is_ai = False
+
+            for i in range(0, 5):
+                for j in range(0, 5):
+                    self.view.matrixOfButton[i][j] = self.createButton(i, j)
+                    if(i != 0 and i != 4 and j != 0 and j != 4):
+                        view.disableButton(self.view.matrixOfButton[i][j])
+                    self.view.matrixOfButton[i][j].grid(row=i, column=j)
+
+            if (self.model.activePlayer.is_ai == True):
+                self.model.aiPlay()
+                self.setBoardFromSimplified(self.model.board)
+
+            self.view.root.mainloop()
         else:
-            playerX_is_ai = False
+            self.getInstance()
 
-        if (playerO_is_ai == 'ai'):
-            self.model.playerO.is_ai = True
-        else:
-            playerO_is_ai = False
-
-        for i in range(0, 5):
-            for j in range(0, 5):
-                self.view.matrixOfButton[i][j] = self.createButton(i, j)
-                if(i != 0 and i != 4 and j != 0 and j != 4):
-                    view.disableButton(self.view.matrixOfButton[i][j])
-                self.view.matrixOfButton[i][j].grid(row=i, column=j)
-
-        if (self.model.activePlayer.is_ai == True):
-            self.model.aiPlay()
-            self.setBoardFromSimplified(self.model.board)
-
-        self.view.root.mainloop()
 
     def createButton(self, i, j):
         button = self.view.createButton()
@@ -96,8 +109,6 @@ class Controller:
                     self.endOfSelection()
 
     def endOfSelection(self):
-        print "ennd"
-        print self.model.board
         self.setBoardFromSimplified(self.model.board)
         self.view.selectingPosition = False
         self.view.selectingDirection = False

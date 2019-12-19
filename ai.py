@@ -4,12 +4,24 @@ import copy
 
 class Ai:
 
+    __instance = None
+
+    @classmethod
+    def getInstance(cls):
+        if cls.__instance is None:
+            cls.__instance = Singleton()
+            return cls.__instance
+
     def __init__(self):
-        self.listOfplayToReturn = list()
+        if not Ai.__instance:
+            self.listOfplayToReturn = list()
+        else:
+            self.getInstance()
 
 # board must be a matrix of string representing the symbol of the pawn
 
     def findBestPlay(self, board, activePlayer):
+        self.listOfplayToReturn *= 0
         threads = list()
         for i in range(0, len(board), 1):
             for j in range(0, len(board), 1):
@@ -25,11 +37,8 @@ class Ai:
 
         bestValue = -1
         # Par defaut, on retournne le premier board de la liste
-        """
-        print "ai"
-        print self.listOfplayToReturn[0][1]
-        print self.listOfplayToReturn
-        """
+        
+        
         playToReturn = self.listOfplayToReturn[0][1]
         for i in range(0, len(self.listOfplayToReturn), 1):
             if (len(self.listOfplayToReturn[i]) > 0):
@@ -128,8 +137,6 @@ class Ai:
             valueAndBoard = list()
             valueAndBoard.append(valueToReturn)
             valueAndBoard.append(boardModified)
-            #print "ValueAndBoard"
-            #print valueAndBoard
             self.listOfplayToReturn.append(valueAndBoard)
 
         return valueToReturn

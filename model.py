@@ -1,5 +1,5 @@
 import player
-import ai
+import ai_factory
 import random
 
 
@@ -7,7 +7,8 @@ class Model:
 
     def __init__(self):
         # creating an ai
-        self.ai = ai.Ai()
+        self.aiFactory = ai_factory.AiFactory()
+        self.ai = self.aiFactory.createAi("default")
 
         # creating the players
         self.playerX = player.Player('X', False)
@@ -88,11 +89,7 @@ class Model:
             self.aiPlay()
 
     def aiPlay(self):
-        print "aiPlay"
-        print self.board
         self.board = self.ai.findBestPlay(self.board, self.activePlayer)
-        print "aiPlay2"
-        print self.board
         self.checkForWin()
         self.swapPlayer()
         if (self.activePlayer.is_ai == True):
