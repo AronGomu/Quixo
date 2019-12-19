@@ -1,4 +1,4 @@
-import quixo
+import controller
 import sys
 
-quixo.launchApp(sys.argv[1], sys.argv[2])
+app = controller.Controller(sys.argv[1], sys.argv[2])

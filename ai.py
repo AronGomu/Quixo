@@ -1,122 +1,123 @@
 import threading
 import copy
 
-listOfPlayToReturn = list()
-playToReturn = None
+
+class Ai:
+
+    def __init__(self):
+        self.listOfplayToReturn = list()
+        self.playToReturn = None
 
 # board must be a matrix of string representing the symbol of the pawn
 
+    def findBestPlay(self, board, activePlayer):
+        threads = list()
+        for i in range(0, len(board), 1):
+            for j in range(0, len(board), 1):
+                if (i == 4 or i == 0 or j == 0 or j == 4):
+                    if (board[i][j] == activePlayer or board[i][j] == ' '):
+                        x = threading.Thread(target=self.makeAllPlay,
+                                             args=(copy.deepcopy(i), copy.deepcopy(j), copy.deepcopy(board), copy.deepcopy(activePlayer), copy.deepcopy(activePlayer), 0))
+                        threads.append(x)
+                        x.start()
 
-def findBestPlay(board, activePlayer):
-    threads = list()
-    for i in range(0, len(board), 1):
-        for j in range(0, len(board), 1):
-            if (i == 4 or i == 0 or j == 0 or j == 4):
-                if (board[i][j] == activePlayer or board[i][j] == ' '):
-                    x = threading.Thread(target=makeAllPlay,
-                                         args=(copy.deepcopy(i), copy.deepcopy(j), copy.deepcopy(board), copy.deepcopy(activePlayer), copy.deepcopy(activePlayer), 0))
-                    threads.append(x)
-                    x.start()
+        for index, thread in enumerate(threads):
+            thread.join()
 
-    for index, thread in enumerate(threads):
-        thread.join()
+        for index, tempBoard in enumerate(self.listOfplayToReturn):
+            if (len(tempBoard) > 0):
+                if (getBoardValue(tempBoard, activePlayer) > getBoardValue(self.playToReturn, activePlayer)):
+                    self.playToReturn = tempBoard
+        return self.playToReturn
 
-    global playToReturn
-    for index, tempBoard in enumerate(listOfPlayToReturn):
-        if (len(tempBoard) > 0):
-            if (getBoardValue(tempBoard, activePlayer) > getBoardValue(playToReturn, activePlayer)):
-                playToReturn = tempBoard
-    return playToReturn
+    def makeAllPlay(self, i, j, board, activePlayer, originalActivePlayer, depth):
 
+        if (depth > 1):
+            return board
 
-def makeAllPlay(i, j, board, activePlayer, originalActivePlayer, depth):
+        matrixOfPossiblePlay = []
+        for k in range(0, 5, 1):
+            matrixOfPossiblePlay.append(range(0, 5, 1))
 
-    if (depth > 1):
-        return board
+        for k in range(0, 5, 1):
+            for l in range(0, 5, 1):
+                matrixOfPossiblePlay[k][l] = False
 
-    matrixOfPossiblePlay = []
-    for k in range(0, 5, 1):
-        matrixOfPossiblePlay.append(range(0, 5, 1))
-
-    for k in range(0, 5, 1):
-        for l in range(0, 5, 1):
-            matrixOfPossiblePlay[k][l] = False
-
-    # Checking all possible play
-    if (i == 0):
-        matrixOfPossiblePlay[4][j] = True
-        if (j != 0):
-            matrixOfPossiblePlay[i][0] = True
-        if (j != 4):
-            matrixOfPossiblePlay[i][4] = True
-    if (i == 4):
-        matrixOfPossiblePlay[0][j] = True
-        if (j != 0):
-            matrixOfPossiblePlay[i][0] = True
-        if (j != 4):
-            matrixOfPossiblePlay[i][4] = True
-    if (j == 0):
-        matrixOfPossiblePlay[i][4] = True
-        if (i != 0):
-            matrixOfPossiblePlay[0][j] = True
-        if (i != 4):
+        # Checking all possible play
+        if (i == 0):
             matrixOfPossiblePlay[4][j] = True
-    if (j == 4):
-        matrixOfPossiblePlay[i][0] = True
-        if (i != 0):
+            if (j != 0):
+                matrixOfPossiblePlay[i][0] = True
+            if (j != 4):
+                matrixOfPossiblePlay[i][4] = True
+        if (i == 4):
             matrixOfPossiblePlay[0][j] = True
-        if (i != 4):
-            matrixOfPossiblePlay[4][j] = True
+            if (j != 0):
+                matrixOfPossiblePlay[i][0] = True
+            if (j != 4):
+                matrixOfPossiblePlay[i][4] = True
+        if (j == 0):
+            matrixOfPossiblePlay[i][4] = True
+            if (i != 0):
+                matrixOfPossiblePlay[0][j] = True
+            if (i != 4):
+                matrixOfPossiblePlay[4][j] = True
+        if (j == 4):
+            matrixOfPossiblePlay[i][0] = True
+            if (i != 0):
+                matrixOfPossiblePlay[0][j] = True
+            if (i != 4):
+                matrixOfPossiblePlay[4][j] = True
 
-    listAllPlayPossible = list()
+        listAllPlayPossible = list()
 
-    # Make all the play
-    for k in range(0, 5, 1):
-        for l in range(0, 5, 1):
-            if (matrixOfPossiblePlay[k][l] == True):
-                tempBoard = []
-                if (k == i and l != j):
-                    if (l == 0):
-                        tempBoard = insertAtRow(copy.deepcopy(k), 0, 4, 1, copy.deepcopy(i), copy.deepcopy(j),
-                                                copy.deepcopy(board), copy.deepcopy(activePlayer))
-                    elif (l == 4):
-                        tempBoard = insertAtRow(copy.deepcopy(k), 4, 0, -1, copy.deepcopy(i), copy.deepcopy(j),
-                                                copy.deepcopy(board), activePlayer)
+        # Make all the play
+        for k in range(0, 5, 1):
+            for l in range(0, 5, 1):
+                if (matrixOfPossiblePlay[k][l] == True):
+                    tempBoard = []
+                    if (k == i and l != j):
+                        if (l == 0):
+                            tempBoard = insertAtRow(copy.deepcopy(k), 0, 4, 1, copy.deepcopy(i), copy.deepcopy(j),
+                                                    copy.deepcopy(board), copy.deepcopy(activePlayer))
+                        elif (l == 4):
+                            tempBoard = insertAtRow(copy.deepcopy(k), 4, 0, -1, copy.deepcopy(i), copy.deepcopy(j),
+                                                    copy.deepcopy(board), activePlayer)
 
-                elif (k != i and l == j):
-                    if (k == 0):
-                        tempBoard = insertAtColumn(copy.deepcopy(l), 0, 4, 1, copy.deepcopy(i), copy.deepcopy(j),
-                                                   copy.deepcopy(board), activePlayer)
-                    elif (k == 4):
-                        tempBoard = insertAtColumn(copy.deepcopy(l), 4, 0, -1, copy.deepcopy(i), copy.deepcopy(j),
-                                                   copy.deepcopy(board), activePlayer)
+                    elif (k != i and l == j):
+                        if (k == 0):
+                            tempBoard = insertAtColumn(copy.deepcopy(l), 0, 4, 1, copy.deepcopy(i), copy.deepcopy(j),
+                                                       copy.deepcopy(board), activePlayer)
+                        elif (k == 4):
+                            tempBoard = insertAtColumn(copy.deepcopy(l), 4, 0, -1, copy.deepcopy(i), copy.deepcopy(j),
+                                                       copy.deepcopy(board), activePlayer)
 
-                for k in range(0, len(tempBoard), 1):
-                    for l in range(0, len(tempBoard), 1):
-                        if (k == 4 or k == 0 or l == 0 or l == 4):
-                            if (tempBoard[k][l] == swapPlayer(activePlayer) or tempBoard[k][l] == ' '):
-                                listAllPlayPossible.append(makeAllPlay(copy.deepcopy(k), copy.deepcopy(l), copy.deepcopy(tempBoard),
-                                                                       copy.deepcopy(swapPlayer(activePlayer)), originalActivePlayer, copy.deepcopy(depth+1)))
+                    for k in range(0, len(tempBoard), 1):
+                        for l in range(0, len(tempBoard), 1):
+                            if (k == 4 or k == 0 or l == 0 or l == 4):
+                                if (tempBoard[k][l] == swapPlayer(activePlayer) or tempBoard[k][l] == ' '):
+                                    listAllPlayPossible.append(self.makeAllPlay(copy.deepcopy(k), copy.deepcopy(l), copy.deepcopy(tempBoard),
+                                                                                copy.deepcopy(swapPlayer(activePlayer)), originalActivePlayer, copy.deepcopy(depth+1)))
 
-    bestValue = 0
-    boardToReturn = []
-    if (len(listAllPlayPossible) > 0):
-        for k in range(0, len(listAllPlayPossible), 1):
-            if (len(listAllPlayPossible[k]) > 0):
-                tempValue = getBoardValue(listAllPlayPossible[k], activePlayer)
-                if (bestValue < tempValue):
-                    bestValue = tempValue
-                    boardToReturn = listAllPlayPossible[k]
-                if (bestValue == 5):
-                    break
-    else:
-        return None
+        bestValue = 0
+        boardToReturn = []
+        if (len(listAllPlayPossible) > 0):
+            for k in range(0, len(listAllPlayPossible), 1):
+                if (len(listAllPlayPossible[k]) > 0):
+                    tempValue = getBoardValue(
+                        listAllPlayPossible[k], activePlayer)
+                    if (bestValue < tempValue):
+                        bestValue = tempValue
+                        boardToReturn = listAllPlayPossible[k]
+                    if (bestValue == 5):
+                        break
+        else:
+            return None
 
-    if (depth == 0):
-        global listOfPlayToReturn
-        listOfPlayToReturn.append(boardToReturn)
+        if (depth == 0):
+            self.listOfplayToReturn.append(boardToReturn)
 
-    return boardToReturn
+        return boardToReturn
 
 
 def printBoard(board):
