@@ -6,10 +6,11 @@ class Ai:
 
     __instance = None
 
+    # singleton pattern
     @classmethod
     def getInstance(cls):
         if cls.__instance is None:
-            cls.__instance = Singleton()
+            cls.__instance = Ai()
             return cls.__instance
 
     def __init__(self):
@@ -18,8 +19,7 @@ class Ai:
         else:
             self.getInstance()
 
-# board must be a matrix of string representing the symbol of the pawn
-
+    # the argument board must be a matrix of string representing the symbol of the pawn
     def findBestPlay(self, board, activePlayer):
         self.listOfplayToReturn *= 0
         threads = list()
@@ -36,9 +36,8 @@ class Ai:
             thread.join()
 
         bestValue = -1
-        # Par defaut, on retournne le premier board de la liste
-        
-        
+        # By default, the board returned is the first one
+
         playToReturn = self.listOfplayToReturn[0][1]
         for i in range(0, len(self.listOfplayToReturn), 1):
             if (len(self.listOfplayToReturn[i]) > 0):
@@ -47,11 +46,14 @@ class Ai:
                     playToReturn = self.listOfplayToReturn[i][1]
         return playToReturn
 
+    # The recursive function doing the minimaxing
     def makeAllPlay(self, i, j, board, activePlayer, originalActivePlayer, depth):
 
+        # Condition
         if (depth > 1):
             return getBoardValue(board, originalActivePlayer)
 
+        # Creating an empty matrix to latter place all playable area
         matrixOfPossiblePlay = []
         for k in range(0, 5, 1):
             matrixOfPossiblePlay.append(range(0, 5, 1))
@@ -88,7 +90,7 @@ class Ai:
 
         listAllValue = list()
 
-        # Make all the play
+        # Make a play then
         for k in range(0, 5, 1):
             for l in range(0, 5, 1):
                 if (matrixOfPossiblePlay[k][l] == True):
@@ -133,6 +135,7 @@ class Ai:
         else:
             return None
 
+        # If this is the first layer, add the best play of the branch in a global variable
         if (depth == 0):
             valueAndBoard = list()
             valueAndBoard.append(valueToReturn)
@@ -140,15 +143,6 @@ class Ai:
             self.listOfplayToReturn.append(valueAndBoard)
 
         return valueToReturn
-
-
-def printBoard(board):
-    if len(board) > 0:
-        print board[0]
-        print board[1]
-        print board[2]
-        print board[3]
-        print board[4]
 
 
 def insertAtRow(k, start, end, increment, i, j, board, activePlayer):
@@ -181,6 +175,8 @@ def insertAtColumn(l, start, end, increment, i, j, board, activePlayer):
 
 def swapPlayer(activePlayer):
     return activePlayer.getNext()
+
+# Function that calcul the value minmaxing of a board
 
 
 def getBoardValue(board, activePlayer):
@@ -235,6 +231,8 @@ def getBoardValue(board, activePlayer):
                 bestValue = tempValue
     return bestValue
 
+# Count the longuest vertical line from one position (checking all adjacent piece up and down)
+
 
 def verticalChecking(board, activePlayer, i, j):
     value = 1
@@ -258,6 +256,8 @@ def verticalChecking(board, activePlayer, i, j):
     else:
         return 0
 
+# Count the longuest horizontal line from one position (checking all adjacent piece left and right)
+
 
 def horizontalChecking(board, activePlayer, i, j):
     value = 1
@@ -280,6 +280,8 @@ def horizontalChecking(board, activePlayer, i, j):
 
     else:
         return 0
+
+# Count the longuest diagonal line from one position
 
 
 def diagonaleChecking(board, activePlayer, i, j):

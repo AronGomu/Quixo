@@ -1,5 +1,7 @@
 import ai
 
+# Factory pattern
+
 
 class AiFactory:
 

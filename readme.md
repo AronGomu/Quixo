@@ -7,5 +7,7 @@ player : this is a human player
 
 Example of full command :
 	python main.py ai player
-	py main.py ai ai
+	python main.py ai ai
 	python main.py player player
+
+The order of ai/player doesn't matter.

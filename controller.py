@@ -6,14 +6,14 @@ import model
 class Controller:
 
     __instance = None
-
+    # Singleton pattern
     @classmethod
     def getInstance(cls):
         if cls.__instance is None:
-            cls.__instance = Singleton()
+            cls.__instance = Controller()
             return cls.__instance
 
-
+    # Creating a controller lunch the game
     def __init__(self, playerX_is_ai, playerO_is_ai):
         if not Controller.__instance:
             self.model = model.Model()
@@ -44,13 +44,13 @@ class Controller:
         else:
             self.getInstance()
 
-
     def createButton(self, i, j):
         button = self.view.createButton()
         button["command"] = command = lambda: self.btnClick(
             self.view.matrixOfButton[i][j], i, j)
         return button
 
+    # When the player click on a clickable case
     def btnClick(self, button, i, j):
         if (self.view.selectingPosition == False and self.view.selectingDirection == False):
             self.view.disableAllButton()
@@ -108,6 +108,7 @@ class Controller:
                         j, 4, 0, -1, self.view.tempBtnClickedInfo)
                     self.endOfSelection()
 
+    # After a player played
     def endOfSelection(self):
         self.setBoardFromSimplified(self.model.board)
         self.view.selectingPosition = False
@@ -119,6 +120,7 @@ class Controller:
         self.setBoardFromSimplified(self.model.board)
         self.view.enableAllPossibleButton(self.model.getPlayerSymbol())
 
+    # Create a matrix of string from the grid representing the graphical board
     def getSimplifiedBoard(self):
         boardSimplified = []
         for i in range(0, 5):
@@ -128,6 +130,7 @@ class Controller:
                 boardSimplified[i][j] = self.view.matrixOfButton[i][j]["text"]
         return boardSimplified
 
+    # From a matrix of string, update the graphical grid
     def setBoardFromSimplified(self, boardSimplified):
         for i in range(0, 5):
             for j in range(0, 5):
